@@ -1,0 +1,18 @@
+{
+    "version": 8,
+    "configurePresets": [
+        {
+            "name": "Clang",
+            "displayName": "Clang 17.0.4 x86_64-unknown-linux-gnu",
+            "description": "正在使用编译器: C = /home/linuxbrew/.linuxbrew/bin/clang, CXX = /home/linuxbrew/.linuxbrew/bin/clang++",
+            "binaryDir": "${sourceDir}/out/build/${presetName}",
+            "generator": "Ninja",
+            "cacheVariables": {
+                "CMAKE_INSTALL_PREFIX": "${sourceDir}/out/install/${presetName}",
+                "CMAKE_C_COMPILER": "/home/linuxbrew/.linuxbrew/bin/clang",
+                "CMAKE_CXX_COMPILER": "/home/linuxbrew/.linuxbrew/bin/clang++",
+                "CMAKE_BUILD_TYPE": "Debug"
+            }
+        }
+    ]
+}
