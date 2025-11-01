@@ -5,20 +5,6 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "type": "lldb-dap",
-            "request": "launch",
-            "name": "Debug",
-            "debugAdapterExecutable":"D:\\ProgramData\\Scoop\\apps\\llvm\\current\\bin\\lldb-dap.exe",
-            "program": "${workspaceRoot}/out/build/VS/smartLog.exe",
-            "args": [
-                "-p",
-                "${workspaceRoot}/out/build/VS",
-                "D:/CodeSpace/cdir/smartLog/src/xx.cpp"
-            ],
-            "env": [],
-            "cwd": "${workspaceRoot}"
-        },
-        {
             "name": "SmartLog",
             "type": "cppvsdbg",
             "request": "launch",
