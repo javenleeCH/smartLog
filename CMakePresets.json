@@ -2,17 +2,28 @@
     "version": 8,
     "configurePresets": [
         {
-            "name": "Clang",
-            "displayName": "Clang 17.0.4 x86_64-unknown-linux-gnu",
-            "description": "正在使用编译器: C = /home/linuxbrew/.linuxbrew/bin/clang, CXX = /home/linuxbrew/.linuxbrew/bin/clang++",
-            "binaryDir": "${sourceDir}/out/build/${presetName}",
+            "name": "VS",
+            "displayName": "vs-ninja",
+            "description": "Using compilers for Visual Studio 17 2022",
             "generator": "Ninja",
+            "binaryDir": "${sourceDir}/out/build/${presetName}",
+            "toolchainFile": "${sourceDir}/cmake/toolchain.cmake",
             "cacheVariables": {
                 "CMAKE_INSTALL_PREFIX": "${sourceDir}/out/install/${presetName}",
-                "CMAKE_C_COMPILER": "/home/linuxbrew/.linuxbrew/bin/clang",
-                "CMAKE_CXX_COMPILER": "/home/linuxbrew/.linuxbrew/bin/clang++",
-                "CMAKE_BUILD_TYPE": "Debug"
+                "CMAKE_C_COMPILER": "cl.exe",
+                "CMAKE_CXX_COMPILER": "cl.exe",
+                // 1. 配置 ccache：指定编译器启动器为 ccache（跨平台兼容）
+                "CMAKE_C_COMPILER_LAUNCHER": "ccache",
+                "CMAKE_CXX_COMPILER_LAUNCHER": "ccache"
             }
+        }
+    ],
+    "buildPresets": [
+        {
+            "name": "VS-debug",
+            "displayName": "Visual Studio Community 2022 Release - amd64 - Debug",
+            "configurePreset": "VS",
+            "configuration": "Debug"
         }
     ]
 }

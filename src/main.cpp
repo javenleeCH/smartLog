@@ -1,16 +1,9 @@
 #include <iostream>
-#include <memory>  // 新增：支持 std::make_unique（C++14+ 标准库）
-#include "clang/Frontend/CompilerInstance.h"
-#include "clang/AST/ASTContext.h"
-#include "clang/ASTMatchers/ASTMatchers.h"
+#include <memory>
 #include "clang/ASTMatchers/ASTMatchFinder.h"
 #include "clang/Rewrite/Core/Rewriter.h"
 #include "clang/Tooling/CommonOptionsParser.h"
 #include "clang/Tooling/Tooling.h"
-#include "clang/Lex/Lexer.h"
-#include "llvm/Support/CommandLine.h"
-#include "llvm/Support/Error.h"
-#include "llvm/ADT/StringRef.h"
 
 // 基础命名空间（只引入必要的类，避免冲突）
 using namespace clang;
@@ -75,7 +68,7 @@ private:
         Range.getBegin().getLocWithOffset(2)
     );
     StringRef Code = Lexer::getSourceText(StartRange, SM, LangOpts);
-    if (Code.startswith("//")) {
+    if (Code.starts_with("//")) {
       return;
     }
 
@@ -133,8 +126,10 @@ int main(int argc, const char **argv) {
     });
     return 1;
   }
-
-  ClangTool Tool(OptionsParser->getCompilations(), OptionsParser->getSourcePathList());
+  auto pathList = OptionsParser->getSourcePathList();
+  auto& compilationList = OptionsParser->getCompilations();
+  std::cout << "处理的源文件列表:\n";
+  ClangTool Tool(compilationList, pathList);
   int Result = Tool.run(newFrontendActionFactory<LogAnnotatorAction>().get());
   if (Result != 0) {
     errs() << "工具运行失败\n";

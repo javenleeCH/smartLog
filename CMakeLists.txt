@@ -5,49 +5,64 @@ project(smartLog)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-# 查找LLVM包
-find_package(LLVM REQUIRED CONFIG)
-get_filename_component(LLVM_CMAKE_ROOT ${LLVM_DIR} DIRECTORY)
-set(CLANG_CMAKE_DIR "${LLVM_CMAKE_ROOT}/clang")
-message(STATUS "pengtest ${CLANG_CMAKE_DIR}")
+if(MSVC)
+  add_compile_options(/utf-8)
+endif()
 
 
-find_package(Clang REQUIRED CONFIG PATHS ${CLANG_CMAKE_DIR} NO_DEFAULT_PATH)
+include(cmake/CPM.cmake)
 
-# 输出调试信息（确认找到的 LLVM/Clang 路径是否正确）
-message(STATUS "Found LLVM ${LLVM_PACKAGE_VERSION}")
-message(STATUS "LLVM 库路径: ${LLVM_LIBRARY_DIRS}")
-message(STATUS "Found Clang ${CLANG_VERSION}")
-message(STATUS "Clang 库路径: ${CLANG_LIBRARY_DIRS}")
-message(STATUS "Clang 自动识别的库: ${CLANG_LIBS}")
 
+# 使用 CPM 获取 llvm-project 源码
+CPMAddPackage(
+  NAME LLVM_PROJECT
+  GITHUB_REPOSITORY llvm/llvm-project
+  GIT_TAG llvmorg-21.1.4
+  DOWNLOAD_ONLY YES
+)
+
+# 3. 设置 Clang 构建选项
+# -----------------------------
+set(LLVM_ENABLE_PROJECTS "clang" CACHE STRING "启用 Clang")
+set(LLVM_TARGETS_TO_BUILD "X86" CACHE STRING "目标架构（可选）")
+set(LLVM_INCLUDE_TESTS OFF CACHE BOOL "不构建测试")
+set(LLVM_INCLUDE_EXAMPLES OFF CACHE BOOL "不构建示例")
+set(LLVM_BUILD_TOOLS OFF CACHE BOOL "只构建库")
+set(LLVM_BUILD_UTILS OFF CACHE BOOL "")
+set(BUILD_SHARED_LIBS OFF CACHE BOOL "静态链接")
+set(LLVM_ENABLE_RTTI ON CACHE BOOL "Clang AST 需要 RTTI")
+set(LLVM_ENABLE_ASSERTIONS ON CACHE BOOL "启用调试断言")
+set(CMAKE_BUILD_TYPE Release CACHE STRING "构建类型")
+
+# -----------------------------
+# 4. 添加子目录：构建 LLVM + Clang
+# -----------------------------
+add_subdirectory(${LLVM_PROJECT_SOURCE_DIR}/llvm ${LLVM_PROJECT_BINARY_DIR})
 
 # 添加LLVM包含目录
 include_directories(${LLVM_INCLUDE_DIRS})
 add_definitions(${LLVM_DEFINITIONS})
 
 
-# 查找必要的LLVM组件
-llvm_map_components_to_libnames(llvm_libs 
-  clangTooling
-  clangASTMatchers
-  clangRewrite
-  clangFrontend
-  clangSerialization
-  clangAST
-  clangBasic
-  clangLex
-  LLVMOption
-  LLVMSupport)
 
 # 创建原始的LLVM示例可执行文件
 add_executable(smartLog src/main.cpp)
+
+
+target_include_directories(smartLog PRIVATE
+  # LLVM 和 Clang 的公共头文件
+  ${LLVM_PROJECT_SOURCE_DIR}/llvm/include
+  ${LLVM_PROJECT_SOURCE_DIR}/clang/include
+  # 构建生成的头文件（重要！）
+  ${LLVM_PROJECT_BINARY_DIR}/include
+  ${LLVM_PROJECT_BINARY_DIR}/tools/clang/include
+)
 
 target_link_directories(smartLog PRIVATE ${LLVM_LIBRARY_DIRS})
 
 
 # 链接LLVM库
-target_link_libraries(smartLog  clangTooling
+target_link_libraries(smartLog clangTooling
   clangASTMatchers
   clangRewrite
   clangFrontend
@@ -57,5 +72,5 @@ target_link_libraries(smartLog  clangTooling
   clangLex)
 
 
-  add_executable(testxx src/xx.cpp)
-  target_include_directories(testxx PRIVATE ${LLVM_INCLUDE_DIRS})
+add_executable(testxx src/xx.cpp)
+target_include_directories(testxx PRIVATE ${LLVM_INCLUDE_DIRS})
