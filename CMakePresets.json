@@ -7,7 +7,6 @@
             "description": "Using compilers for Visual Studio 17 2022",
             "generator": "Ninja",
             "binaryDir": "${sourceDir}/out/build/${presetName}",
-            "toolchainFile": "${sourceDir}/cmake/toolchain.cmake",
             "cacheVariables": {
                 "CMAKE_INSTALL_PREFIX": "${sourceDir}/out/install/${presetName}",
                 "CMAKE_C_COMPILER": "cl.exe",
