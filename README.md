@@ -33,7 +33,7 @@ smartLog/
 
 5. 运行程序
    ```bash
-   ./smartLog
+   .\out\build\VS\smartLog.exe -p .\out\build\VS .\src\xx.cpp
    ```
 
 ## 功能说明
